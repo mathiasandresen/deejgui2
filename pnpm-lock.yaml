@@ -10,6 +10,7 @@ specifiers:
   '@radix-ui/react-slot': ^1.0.2
   '@radix-ui/react-switch': ^1.0.3
   '@radix-ui/react-toggle': ^1.0.3
+  '@tanstack/react-query': ^5.0.5
   '@tauri-apps/api': ^1.5.0
   '@tauri-apps/cli': ^1.5.0
   '@types/node': ^20.8.7
@@ -34,6 +35,7 @@ specifiers:
   tailwindcss-animate: ^1.0.7
   typescript: ^5.2.2
   vite: ^4.4.4
+  yaml: ^2.3.3
   zod: ^3.22.4
 
 dependencies:
@@ -46,6 +48,7 @@ dependencies:
   '@radix-ui/react-slot': 1.0.2_a4699fd93d6d4286ced289fc5b403c8a
   '@radix-ui/react-switch': 1.0.3_e4b9780f28fd7e2aaac460ba18d94e3e
   '@radix-ui/react-toggle': 1.0.3_e4b9780f28fd7e2aaac460ba18d94e3e
+  '@tanstack/react-query': 5.0.5_react-dom@18.2.0+react@18.2.0
   '@tauri-apps/api': 1.5.1
   '@types/node': 20.8.7
   class-variance-authority: 0.7.0
@@ -56,6 +59,7 @@ dependencies:
   react-hook-form: 7.47.0_react@18.2.0
   tailwind-merge: 1.14.0
   tailwindcss-animate: 1.0.7_tailwindcss@3.3.3
+  yaml: 2.3.3
   zod: 3.22.4
 
 devDependencies:
@@ -1267,6 +1271,27 @@ packages:
     resolution: {integrity: sha512-fyrgCaedtvMg9NK3en0pnOYJdtfwxUcNolezkNPUsoX57X8oQk+NkqcvzHXD2uKNij6GXmWU9NDru2IWjrO4BQ==}
     dependencies:
       '@babel/runtime': 7.23.2
+    dev: false
+
+  /@tanstack/query-core/5.0.5:
+    resolution: {integrity: sha512-MThCETMkHDHTnFZHp71L+SqTtD5d6XHftFCVR1xRJdWM3qGrlQ2VCXaj0SKVcyJej2e1Opa2c7iknu1llxCDNQ==}
+    dev: false
+
+  /@tanstack/react-query/5.0.5_react-dom@18.2.0+react@18.2.0:
+    resolution: {integrity: sha512-ZG0Q4HZ0iuI8mWiZ2/MdVYPHbrmAVhMn7+gLOkxJh6zLIgCL4luSZlohzN5Xt4MjxfxxWioO1nemwpudaTsmQg==}
+    peerDependencies:
+      react: ^18.0.0
+      react-dom: ^18.0.0
+      react-native: '*'
+    peerDependenciesMeta:
+      react-dom:
+        optional: true
+      react-native:
+        optional: true
+    dependencies:
+      '@tanstack/query-core': 5.0.5
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
     dev: false
 
   /@tauri-apps/api/1.5.1:
@@ -3094,7 +3119,6 @@ packages:
   /yaml/2.3.3:
     resolution: {integrity: sha512-zw0VAJxgeZ6+++/su5AFoqBbZbrEakwu+X0M5HmcwUiBL7AzcuPKjj5we4xfQLp78LkEMpD0cOnUhmgOVy3KdQ==}
     engines: {node: '>= 14'}
-    dev: true
 
   /yocto-queue/0.1.0:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}

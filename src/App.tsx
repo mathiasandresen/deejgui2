@@ -1,21 +1,21 @@
+import {
+  AdjustmentsHorizontalIcon,
+  Cog6ToothIcon,
+} from '@heroicons/react/24/outline';
 import { useState } from 'react';
 import { Logo } from './components/logo';
 import { Button } from './components/ui/button';
-import {
-  Cog6ToothIcon,
-  AdjustmentsHorizontalIcon,
-} from '@heroicons/react/24/outline';
 import { cn } from './lib/utils';
-import { Form, FormField } from './components/ui/form';
 import { SettingsPage } from './pages/SettingsPage';
 import { SlidersPage } from './pages/SlidersPage';
+import { useReadDeejConfig } from './lib/commands';
 
 type Page = 'sliders' | 'settings';
-type NavItem = {
+interface NavItem {
   icon: React.ReactNode;
   label: string;
   page: Page;
-};
+}
 
 const NavItems: NavItem[] = [
   {
@@ -33,6 +33,8 @@ const NavItems: NavItem[] = [
 export const App = () => {
   const [selectedPage, setSelectedPage] = useState<Page>('settings');
 
+  useReadDeejConfig();
+
   return (
     <div className="flex min-h-screen flex-col">
       <div className="flex h-16 items-center border-b px-4">
@@ -43,6 +45,7 @@ export const App = () => {
           <div className="flex flex-1 flex-col p-2">
             {NavItems.map(({ icon, label, page }) => (
               <Button
+                key={page}
                 variant="ghost"
                 className={cn('justify-start gap-2', {
                   'bg-muted hover:bg-muted': selectedPage === page,
@@ -56,8 +59,8 @@ export const App = () => {
           </div>
         </div>
         <div className="flex w-full p-2 px-4">
-          {selectedPage == 'sliders' && <SlidersPage />}
-          {selectedPage == 'settings' && <SettingsPage />}
+          {selectedPage === 'sliders' && <SlidersPage />}
+          {selectedPage === 'settings' && <SettingsPage />}
         </div>
       </div>
     </div>

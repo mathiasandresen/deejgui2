@@ -16,6 +16,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
+import { useReadDeejConfig } from '@/lib/commands';
 import {
   DEFAULT_SETTINGS,
   NOISE_REDUCTION_VALUES,
@@ -25,11 +26,9 @@ import { ArrowPathIcon } from '@heroicons/react/24/outline';
 import { useForm } from 'react-hook-form';
 
 export const SettingsPage = () => {
-  const form = useForm<Settings>({
-    defaultValues: {
-      ...DEFAULT_SETTINGS,
-    },
-  });
+  const form = useForm<Settings>({});
+
+  const { data: settings, isLoading } = useReadDeejConfig();
 
   return (
     <div className="flex flex-1 flex-col gap-2">
@@ -50,10 +49,15 @@ export const SettingsPage = () => {
                 </FormDescription>
               </div>
               <FormControl>
-                <Switch
-                  checked={field.value}
-                  onCheckedChange={field.onChange}
-                />
+                {isLoading ? (
+                  <Switch key="disabled" disabled />
+                ) : (
+                  <Switch
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                    defaultChecked={settings?.invert_sliders}
+                  />
+                )}
               </FormControl>
             </FormItem>
           )}
@@ -70,19 +74,28 @@ export const SettingsPage = () => {
                 </FormDescription>
               </div>
               <FormControl>
-                <Select
-                  value={field.value ?? undefined}
-                  onValueChange={field.onChange}
-                >
-                  <SelectTrigger className="w-[180px]">
-                    <SelectValue placeholder="Select COM port" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="com9">COM9</SelectItem>
-                    <SelectItem value="com13">COM13</SelectItem>
-                    <SelectItem value="com17">COM17</SelectItem>
-                  </SelectContent>
-                </Select>
+                {isLoading ? (
+                  <Select disabled key="disabled">
+                    <SelectTrigger className="w-[180px]" disabled>
+                      <SelectValue placeholder="Select COM port" />
+                    </SelectTrigger>
+                  </Select>
+                ) : (
+                  <Select
+                    value={field.value ?? undefined}
+                    onValueChange={field.onChange}
+                    defaultValue={settings?.com_port ?? undefined}
+                  >
+                    <SelectTrigger className="w-[180px]">
+                      <SelectValue placeholder="Select COM port" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="com9">COM9</SelectItem>
+                      <SelectItem value="com13">COM13</SelectItem>
+                      <SelectItem value="com17">COM17</SelectItem>
+                    </SelectContent>
+                  </Select>
+                )}
               </FormControl>
             </FormItem>
           )}
@@ -100,14 +113,20 @@ export const SettingsPage = () => {
               </div>
               <FormControl>
                 <div className="flex w-[180px] gap-2">
-                  <Input
-                    value={field.value}
-                    onChange={field.onChange}
-                    type="number"
-                  />
+                  {isLoading ? (
+                    <Input disabled key="disabled" />
+                  ) : (
+                    <Input
+                      value={field.value}
+                      onChange={field.onChange}
+                      defaultValue={settings?.baud_rate}
+                      type="number"
+                    />
+                  )}
                   <Button
                     variant="outline"
                     onClick={() => field.onChange(DEFAULT_SETTINGS.baud_rate)}
+                    disabled={isLoading}
                   >
                     <ArrowPathIcon width="1em" />
                   </Button>
@@ -128,18 +147,30 @@ export const SettingsPage = () => {
                 </FormDescription>
               </div>
               <FormControl>
-                <Select value={field.value} onValueChange={field.onChange}>
-                  <SelectTrigger className="w-[180px]">
-                    <SelectValue placeholder="Noise reduction" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {NOISE_REDUCTION_VALUES.map((value) => (
-                      <SelectItem value={value} key={value}>
-                        {value}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                {isLoading ? (
+                  <Select disabled key="disabled">
+                    <SelectTrigger className="w-[180px]">
+                      <SelectValue placeholder="Noise reduction" />
+                    </SelectTrigger>
+                  </Select>
+                ) : (
+                  <Select
+                    value={field.value}
+                    onValueChange={field.onChange}
+                    defaultValue={settings?.noise_reduction}
+                  >
+                    <SelectTrigger className="w-[180px]">
+                      <SelectValue placeholder="Noise reduction" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {NOISE_REDUCTION_VALUES.map((value) => (
+                        <SelectItem value={value} key={value}>
+                          {value}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
               </FormControl>
             </FormItem>
           )}

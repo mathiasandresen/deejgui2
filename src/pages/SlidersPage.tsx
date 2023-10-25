@@ -1,11 +1,5 @@
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from '@/components/ui/accordion';
+import { Slider } from '@/components/slider';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { PlusIcon } from '@heroicons/react/24/outline';
 
 export const SlidersPage = () => {
@@ -15,34 +9,10 @@ export const SlidersPage = () => {
         Sliders
       </h2>
 
-      <div className="rounded-lg border">
-        <Accordion type="single" collapsible>
-          <AccordionItem value="item-1" className="border-0 p-0">
-            <AccordionTrigger className="px-4 hover:no-underline">
-              <div className="mr-2 flex flex-1 flex-row items-center gap-2">
-                <div className="mr-2">1</div>
-                <div className="flex-1 text-start">49 applications</div>
-                <Button
-                  className="flex gap-2"
-                  onClick={(e) => e.preventDefault()}
-                >
-                  <PlusIcon width="1em" />
-                  Add
-                </Button>
-              </div>
-            </AccordionTrigger>
-            <AccordionContent className="border-t bg-slate-50 px-4 pb-0 pt-2">
-              <div className="grid grid-cols-2 gap-1 pt-2">
-                <Input className="bg-white" placeholder="Select application" />
-                <Input className="bg-white" placeholder="Select application" />
-                <Input className="bg-white" placeholder="Select application" />
-                <Input className="bg-white" placeholder="Select application" />
-                <Input className="bg-white" placeholder="Select application" />
-              </div>
-            </AccordionContent>
-          </AccordionItem>
-        </Accordion>
-      </div>
+      <Slider index={1} applications={['hello.exe']} />
+      <Slider index={2} applications={['hello.exe', 'world.exe']} />
+      <Slider index={3} applications={[]} />
+
       <div>
         <Button variant="outline" className="flex-shrink">
           <PlusIcon width="1em" />
