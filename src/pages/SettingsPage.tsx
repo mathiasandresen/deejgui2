@@ -16,19 +16,42 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
-import { useReadDeejConfig } from '@/lib/commands';
+import {
+  useReadDeejConfig,
+  useListCOMPorts,
+  saveDeejConfig,
+} from '@/lib/commands';
 import {
   DEFAULT_SETTINGS,
   NOISE_REDUCTION_VALUES,
   Settings,
 } from '@/lib/models/settings';
 import { ArrowPathIcon } from '@heroicons/react/24/outline';
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 
 export const SettingsPage = () => {
-  const form = useForm<Settings>({});
-
   const { data: settings, isLoading } = useReadDeejConfig();
+  const { data: availableCOMPorts, isLoading: isAvailableCOMPortsLoading } =
+    useListCOMPorts();
+
+  const form = useForm<Settings>({
+    values: settings,
+    defaultValues: DEFAULT_SETTINGS,
+    resetOptions: {
+      keepDefaultValues: true,
+    },
+    mode: 'onChange',
+  });
+
+  const { handleSubmit, watch } = form;
+
+  const onSubmit = handleSubmit(saveDeejConfig);
+
+  useEffect(() => {
+    const sub = watch(() => void onSubmit());
+    return sub.unsubscribe;
+  }, [handleSubmit, watch]);
 
   return (
     <div className="flex flex-1 flex-col gap-2">
@@ -55,7 +78,6 @@ export const SettingsPage = () => {
                   <Switch
                     checked={field.value}
                     onCheckedChange={field.onChange}
-                    defaultChecked={settings?.invert_sliders}
                   />
                 )}
               </FormControl>
@@ -74,7 +96,7 @@ export const SettingsPage = () => {
                 </FormDescription>
               </div>
               <FormControl>
-                {isLoading ? (
+                {isLoading || isAvailableCOMPortsLoading ? (
                   <Select disabled key="disabled">
                     <SelectTrigger className="w-[180px]" disabled>
                       <SelectValue placeholder="Select COM port" />
@@ -84,15 +106,16 @@ export const SettingsPage = () => {
                   <Select
                     value={field.value ?? undefined}
                     onValueChange={field.onChange}
-                    defaultValue={settings?.com_port ?? undefined}
                   >
                     <SelectTrigger className="w-[180px]">
                       <SelectValue placeholder="Select COM port" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="com9">COM9</SelectItem>
-                      <SelectItem value="com13">COM13</SelectItem>
-                      <SelectItem value="com17">COM17</SelectItem>
+                      {availableCOMPorts?.map((port) => (
+                        <SelectItem value={port} key={port}>
+                          {port}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 )}
@@ -119,7 +142,6 @@ export const SettingsPage = () => {
                     <Input
                       value={field.value}
                       onChange={field.onChange}
-                      defaultValue={settings?.baud_rate}
                       type="number"
                     />
                   )}
@@ -154,11 +176,7 @@ export const SettingsPage = () => {
                     </SelectTrigger>
                   </Select>
                 ) : (
-                  <Select
-                    value={field.value}
-                    onValueChange={field.onChange}
-                    defaultValue={settings?.noise_reduction}
-                  >
+                  <Select value={field.value} onValueChange={field.onChange}>
                     <SelectTrigger className="w-[180px]">
                       <SelectValue placeholder="Noise reduction" />
                     </SelectTrigger>

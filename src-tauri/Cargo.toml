@@ -17,6 +17,8 @@ tauri-build = { version = "1.5.0", features = [] }
 [dependencies]
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
+serialport = "4.1.0"
+sysinfo = "0.30.7"
 tauri = { version = "1.5.2", features = [ "dialog-all", "fs-write-file", "window-all", "path-all", "fs-read-file", "fs-create-dir"] }
 
 [features]

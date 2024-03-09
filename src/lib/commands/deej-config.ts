@@ -2,16 +2,14 @@ import { invoke } from '@tauri-apps/api';
 import { Settings, settingsSchema } from '../models/settings';
 import yaml from 'yaml';
 import { useQuery } from '@tanstack/react-query';
+import debounce from 'just-debounce-it';
 
-const configPath = 'F:\\Program Files (x86)\\deej\\config_copy.yaml';
+const configPath = 'C:\\deej\\config - Copy.yaml';
 
 export const readDeejConfig = async () => {
   const res = await invoke<string>('read_deej_config', {
     filePath: configPath,
   });
-
-  // TODO: fake delay for testing
-  await new Promise((resolve) => setTimeout(resolve, 2000));
 
   const obj = yaml.parse(res) as object;
   const config = await settingsSchema.parseAsync(obj);
@@ -25,8 +23,8 @@ export const useReadDeejConfig = () => {
   });
 };
 
-export const saveDeejConfig = async (settings: Settings) => {
+export const saveDeejConfig = debounce(async (settings: Settings) => {
   const content = yaml.stringify(settings);
 
   return invoke<unknown>('save_deej_config', { filePath: configPath, content });
-};
+}, 250);
