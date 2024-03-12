@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { invoke } from '@tauri-apps/api';
 import debounce from 'just-debounce-it';
-import { useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import yaml from 'yaml';
 import { DEFAULT_SETTINGS, Settings, SettingsSchema } from '../models/settings';
@@ -46,17 +46,20 @@ export const useDeejConfig = () => {
     mode: 'onChange',
   });
 
-  const { handleSubmit, watch } = form;
+  const { handleSubmit, watch, unregister } = form;
 
-  const onSubmit = handleSubmit(saveDeejConfig);
+  const onSubmit = useCallback(
+    () => handleSubmit(saveDeejConfig)(),
+    [handleSubmit],
+  );
 
   useEffect(() => {
     const sub = watch(() => void onSubmit());
     return () => {
       sub.unsubscribe();
-      form.unregister();
+      unregister();
     };
-  }, [handleSubmit, watch]);
+  }, [handleSubmit, onSubmit, unregister, watch]);
 
   return { form, isLoading };
 };

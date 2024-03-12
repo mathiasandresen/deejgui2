@@ -7,8 +7,9 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
-import { PlusIcon, TrashIcon } from '@heroicons/react/24/outline';
+import { PlusIcon } from '@heroicons/react/24/outline';
 import { useCallback, useMemo, useState } from 'react';
+import { DeleteApplicationButton } from './DeleteApplicationButton';
 import { ProcessListModal } from './ProcessListModal';
 
 export interface SliderProps {
@@ -81,14 +82,10 @@ export const Slider = ({
                       value={application}
                     />
                     {applications.length > 1 && (
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="absolute right-0 w-8"
+                      <DeleteApplicationButton
+                        className="absolute right-0"
                         onClick={() => onDeleteApplication(idx)}
-                      >
-                        <TrashIcon width="1em" />
-                      </Button>
+                      />
                     )}
                   </div>
                 ))
@@ -108,3 +105,5 @@ export const Slider = ({
     </div>
   );
 };
+
+
