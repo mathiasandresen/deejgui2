@@ -15,11 +15,24 @@ rust-version = "1.60"
 tauri-build = { version = "1.5.0", features = [] }
 
 [dependencies]
+base64 = "0.22.0"
+image = "0.25.0"
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
 serialport = "4.1.0"
 sysinfo = "0.30.7"
 tauri = { version = "1.5.2", features = [ "dialog-all", "fs-write-file", "window-all", "path-all", "fs-read-file", "fs-create-dir"] }
+windows = {version = "0.54.0", features = [
+  "Data_Xml_Dom",
+  "Win32_Foundation",
+  "Win32_Security",
+  "Win32_System_Threading",
+  "Win32_UI_WindowsAndMessaging",
+  "Win32_Graphics_Imaging",
+  "Win32_Graphics_Gdi",
+  "Win32_UI_Shell",
+  "Win32_System_LibraryLoader"
+] }
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem and the built-in dev server is disabled.

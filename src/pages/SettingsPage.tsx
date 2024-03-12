@@ -16,42 +16,18 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
-import {
-  useReadDeejConfig,
-  useListCOMPorts,
-  saveDeejConfig,
-} from '@/lib/commands';
+import { useDeejConfig, useListCOMPorts } from '@/lib/commands';
 import {
   DEFAULT_SETTINGS,
   NOISE_REDUCTION_VALUES,
-  Settings,
 } from '@/lib/models/settings';
 import { ArrowPathIcon } from '@heroicons/react/24/outline';
-import { useEffect } from 'react';
-import { useForm } from 'react-hook-form';
 
 export const SettingsPage = () => {
-  const { data: settings, isLoading } = useReadDeejConfig();
   const { data: availableCOMPorts, isLoading: isAvailableCOMPortsLoading } =
     useListCOMPorts();
 
-  const form = useForm<Settings>({
-    values: settings,
-    defaultValues: DEFAULT_SETTINGS,
-    resetOptions: {
-      keepDefaultValues: true,
-    },
-    mode: 'onChange',
-  });
-
-  const { handleSubmit, watch } = form;
-
-  const onSubmit = handleSubmit(saveDeejConfig);
-
-  useEffect(() => {
-    const sub = watch(() => void onSubmit());
-    return sub.unsubscribe;
-  }, [handleSubmit, watch]);
+  const { form, isLoading } = useDeejConfig();
 
   return (
     <div className="flex flex-1 flex-col gap-2">
