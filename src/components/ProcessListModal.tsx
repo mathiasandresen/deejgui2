@@ -9,6 +9,7 @@ import { useListProcesses } from '@/lib/commands/processes';
 import { useCallback, useMemo, useState } from 'react';
 import { ProcessListItem } from './ProcessListItem';
 import { Input } from './ui/input';
+import { Button } from './ui/button';
 
 export interface ProcessListModalProps {
   isOpen: boolean;
@@ -25,13 +26,26 @@ export const ProcessListModal = ({
 
   const [searchQuery, setSearchQuery] = useState('');
 
-  const onOpenChange = useCallback(
+  const handleOpenChange = useCallback(
     (newState: boolean) => {
       if (newState === false) {
         onClose();
+
+        // Add delay to allow animation to play
+        setTimeout(() => {
+          setSearchQuery('');
+        }, 250);
       }
     },
     [onClose],
+  );
+
+  const handleAddApplication = useCallback(
+    (app: string) => {
+      onAddApplication(app);
+      handleOpenChange(false);
+    },
+    [handleOpenChange, onAddApplication],
   );
 
   const filteredApplications = useMemo(() => {
@@ -46,25 +60,35 @@ export const ProcessListModal = ({
   }, [processes, searchQuery]);
 
   return (
-    <Dialog open={isOpen} onOpenChange={onOpenChange}>
+    <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogContent className="max-w-xl">
         <DialogHeader>
           <DialogTitle>Select application</DialogTitle>
         </DialogHeader>
 
-        <Input
-          placeholder="Filter applications..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-        />
+        <div className="flex w-full items-center gap-2">
+          <Input
+            placeholder="Filter applications..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+          <Button onClick={() => handleAddApplication(searchQuery)}>
+            Add manually
+          </Button>
+        </div>
 
         <ScrollArea className="h-[70vh]" type="always">
           <div className="pr-4">
+            {filteredApplications.length === 0 && (
+              <div className="text-center text-sm text-slate-500">
+                No applications found
+              </div>
+            )}
             {filteredApplications.map((process) => (
               <ProcessListItem
                 process={process}
                 key={process.exe + '_' + process.name}
-                onClick={() => onAddApplication(process.name)}
+                onClick={() => handleAddApplication(process.name)}
               />
             ))}
           </div>
