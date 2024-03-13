@@ -7,7 +7,7 @@
     "distDir": "../build"
   },
   "package": {
-    "productName": "deejgui2",
+    "productName": "deejgui",
     "version": "0.1.0"
   },
   "tauri": {
@@ -22,10 +22,14 @@
         "readFile": true,
         "writeFile": true,
         "createDir": true,
-        "scope": ["$APP", "$APP/*"]
+        "scope": ["$APP", "$APP/*", "$RESOURCE/*"]
       },
       "window": {
         "all": true
+      },
+      "shell": {
+        "sidecar": true,
+        "scope": [{ "name": "bin", "sidecar": true }]
       }
     },
     "bundle": {
@@ -35,7 +39,7 @@
       "deb": {
         "depends": []
       },
-      "externalBin": [],
+      "externalBin": ["bin/deej"],
       "icon": [
         "icons/32x32.png",
         "icons/128x128.png",
@@ -43,7 +47,7 @@
         "icons/icon.icns",
         "icons/icon.ico"
       ],
-      "identifier": "com.tauri.dev",
+      "identifier": "dk.mathiasandresen.deejgui",
       "longDescription": "",
       "macOS": {
         "entitlements": null,
@@ -52,7 +56,7 @@
         "providerShortName": null,
         "signingIdentity": null
       },
-      "resources": [],
+      "resources": ["resources/*"],
       "shortDescription": "",
       "targets": "all",
       "windows": {

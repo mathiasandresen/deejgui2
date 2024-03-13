@@ -1,11 +1,9 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-
 use base64::Engine;
 use image::{ImageBuffer, Rgba};
 use serde::{Deserialize, Serialize};
-use windows::Win32::UI::Shell::ExtractAssociatedIconA;
 use std::collections::HashMap;
 use std::fs;
 use std::io::Cursor;
@@ -17,12 +15,61 @@ use windows::Win32::Graphics::Gdi::{
     DIB_RGB_COLORS,
 };
 use windows::Win32::System::LibraryLoader::GetModuleHandleA;
+use windows::Win32::UI::Shell::ExtractAssociatedIconA;
 use windows::Win32::UI::WindowsAndMessaging::{
     self, DestroyIcon, EnumWindows, GetIconInfo, IsWindowVisible, ICONINFO,
+};
+use tauri::{
+    api::process::{Command,CommandEvent},
+    Manager,
 };
 
 fn main() {
     tauri::Builder::default()
+        .setup(|app| {
+            let window = app.get_window("main").unwrap();
+            let config_dir = app.path_resolver()
+                .app_config_dir()
+                .expect("Failed to resolve config dir");
+
+            let config_file_path = config_dir.join("config.yaml");
+
+            if !config_dir.exists() {
+                std::fs::create_dir(&config_dir)
+                    .expect("Could not create config dir");
+            } 
+
+            if !config_file_path.exists() {
+                let template_path = app.path_resolver()
+                    .resolve_resource("resources/config.template.yaml")
+                    .expect("Could not resolve config template");
+
+                std::fs::copy(&template_path, &config_file_path)
+                    .expect("Could not copy config template");
+            }
+
+            let (mut rx, mut child) = Command::new_sidecar("deej")
+                .expect("failed to create `deej` binary command")
+                .current_dir(config_dir)
+                .spawn()
+                .expect("Failed to spawn sidecar");
+    
+            tauri::async_runtime::spawn(async move {
+                // read events such as stdout
+                while let Some(event) = rx.recv().await {
+                    if let CommandEvent::Stdout(line) = event {
+                        window
+                            .emit("message", Some(format!("'{}'", line)))
+                            .expect("failed to emit event");
+                        // write to stdin
+                        child.write("message from Rust\n".as_bytes()).unwrap();
+                    }
+                }
+            });
+
+            Ok(())
+        })
+        .event
         .invoke_handler(tauri::generate_handler![
             read_deej_config,
             save_deej_config,
@@ -69,7 +116,6 @@ fn list_devices() -> Result<Vec<String>, String> {
 
     Ok(return_value)
 }
-
 
 #[derive(Serialize, Deserialize)]
 
@@ -138,7 +184,6 @@ fn list_processes() -> Result<Vec<String>, String> {
                 Some(exe) => exe.to_str().unwrap().to_string(),
                 None => String::from(""),
             };
-        
 
             let name = process.name().to_string();
 
@@ -186,10 +231,7 @@ fn extract_icon(exe_path: String) -> Result<String, String> {
     let path_bytes: &mut [u8; 128] = &mut [0; 128];
     path_bytes[..exe_path.len()].copy_from_slice(exe_path.as_bytes());
 
-    let handle = unsafe {
-        GetModuleHandleA(windows::core::PCSTR::null())
-    }
-    .unwrap();
+    let handle = unsafe { GetModuleHandleA(windows::core::PCSTR::null()) }.unwrap();
 
     let mut icon_index: u16 = 0;
     let icon_index_ptr = &mut icon_index as *mut u16;
@@ -267,6 +309,9 @@ fn extract_icon(exe_path: String) -> Result<String, String> {
         DestroyIcon(icon);
         DeleteDC(dc_src);
 
-        Ok(format!("data:image/png;base64,{}", base64::engine::general_purpose::STANDARD.encode(&png)))
+        Ok(format!(
+            "data:image/png;base64,{}",
+            base64::engine::general_purpose::STANDARD.encode(&png)
+        ))
     }
 }
