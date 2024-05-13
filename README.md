@@ -1,7 +1,20 @@
-# Tauri + React + Typescript
+# Deej GUI
 
-This template should help get you started developing with Tauri, React and Typescript in Vite.
+This project contains a GUI for the [deej project](https://github.com/omriharel/deej).
+It currently only works on Windows.
 
-## Recommended IDE Setup
+## Running the development build
 
-- [VS Code](https://code.visualstudio.com/) + [Tauri](https://marketplace.visualstudio.com/items?itemName=tauri-apps.tauri-vscode) + [rust-analyzer](https://marketplace.visualstudio.com/items?itemName=rust-lang.rust-analyzer)
+See requirements for tauri [here](https://tauri.app/v1/guides/getting-started/prerequisites).
+
+Once installed, install all javascript dependencies:
+
+```bash
+pnpm install
+```
+
+Then you can start it with:
+
+```bash
+pnpm tauri dev
+```
