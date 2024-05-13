@@ -7,8 +7,8 @@
     "distDir": "../build"
   },
   "package": {
-    "productName": "deejgui2",
-    "version": "0.1.0"
+    "productName": "Deej GUI",
+    "version": "0.2.0"
   },
   "tauri": {
     "allowlist": {
@@ -22,6 +22,7 @@
         "readFile": true,
         "writeFile": true,
         "createDir": true,
+        "exists": true,
         "scope": ["$APP", "$APP/*"]
       },
       "window": {
@@ -43,7 +44,7 @@
         "icons/icon.icns",
         "icons/icon.ico"
       ],
-      "identifier": "com.tauri.dev",
+      "identifier": "dk.mathiasandresen.deejgui",
       "longDescription": "",
       "macOS": {
         "entitlements": null,

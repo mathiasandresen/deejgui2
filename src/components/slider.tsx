@@ -42,16 +42,20 @@ export const Slider = ({
     <div className="rounded-lg border">
       <Accordion type="single" collapsible>
         <AccordionItem value="item-1" className="border-0 p-0">
-          <AccordionTrigger className="px-4 hover:no-underline">
-            <div className="mr-2 flex flex-1 flex-row items-center gap-2">
-              <div className="mr-2 text-slate-400">{index}</div>
-              <div className="flex-1 text-start">
-                {applications.length === 1
-                  ? applications[0]
-                  : applications.length === 0
-                  ? 'No applications'
-                  : `${applications.length} applications`}
+          <div className="relative">
+            <AccordionTrigger className="px-4 hover:no-underline">
+              <div className="mr-2 flex flex-1 flex-row items-center gap-2">
+                <div className="mr-2 text-slate-400">{index}</div>
+                <div className="flex-1 text-start">
+                  {applications.length === 1
+                    ? applications[0]
+                    : applications.length === 0
+                    ? 'No applications'
+                    : `${applications.length} applications`}
+                </div>
               </div>
+            </AccordionTrigger>
+            <div className="absolute bottom-0 right-12 top-0 flex items-center">
               <Button
                 className="flex gap-2"
                 onClick={(e) => {
@@ -63,7 +67,7 @@ export const Slider = ({
                 Application
               </Button>
             </div>
-          </AccordionTrigger>
+          </div>
           <AccordionContent className="border-t bg-slate-50 px-4 pb-0 pt-2">
             <div
               className={cn('grid grid-cols-1 gap-1 pt-2 ', {
@@ -80,6 +84,7 @@ export const Slider = ({
                       className="bg-white pr-8"
                       placeholder="Select application"
                       value={application}
+                      readOnly
                     />
                     {applications.length > 1 && (
                       <DeleteApplicationButton
@@ -105,5 +110,3 @@ export const Slider = ({
     </div>
   );
 };
-
-

@@ -72,7 +72,10 @@ export const ProcessListModal = ({
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
-          <Button onClick={() => handleAddApplication(searchQuery)}>
+          <Button
+            disabled={searchQuery === ''}
+            onClick={() => handleAddApplication(searchQuery)}
+          >
             Add manually
           </Button>
         </div>

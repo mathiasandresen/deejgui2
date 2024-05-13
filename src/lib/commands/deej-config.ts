@@ -1,16 +1,12 @@
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { invoke } from '@tauri-apps/api';
-import debounce from 'just-debounce-it';
-import { useCallback, useEffect } from 'react';
-import { useForm } from 'react-hook-form';
 import yaml from 'yaml';
-import { DEFAULT_SETTINGS, Settings, SettingsSchema } from '../models/settings';
+import { Settings, SettingsSchema } from '../models/settings';
+import { useReadApplicationConfig } from './application-config';
 
-const configPath = 'C:\\deej\\config_test.yaml';
-
-export const readDeejConfig = async () => {
+export const readDeejConfig = async (path: string) => {
   const res = await invoke<string>('read_deej_config', {
-    filePath: configPath,
+    filePath: path,
   });
 
   const obj = yaml.parse(res) as object;
@@ -21,45 +17,38 @@ export const readDeejConfig = async () => {
 };
 
 export const useReadDeejConfig = () => {
+  const { isSuccess, data: applicationConfig } = useReadApplicationConfig();
+
   return useQuery({
     queryKey: ['read_deej_config'],
-    queryFn: readDeejConfig,
+    queryFn: () => readDeejConfig(applicationConfig?.deejConfigPath ?? ''),
     gcTime: 5 * 60 * 1000,
+    enabled: isSuccess,
   });
 };
 
-export const saveDeejConfig = debounce(async (settings: Settings) => {
+const saveDeejConfig = async (path: string | undefined, settings: Settings) => {
+  if (path == null) {
+    return;
+  }
+
   const content = yaml.stringify(settings);
 
-  return invoke<unknown>('save_deej_config', { filePath: configPath, content });
-}, 250);
+  return invoke<unknown>('save_deej_config', { filePath: path, content });
+};
 
-export const useDeejConfig = () => {
-  const { data: settings, isLoading } = useReadDeejConfig();
+export const useSaveDeejConfig = () => {
+  const queryClient = useQueryClient();
 
-  const form = useForm<Settings>({
-    values: settings,
-    defaultValues: settings ?? DEFAULT_SETTINGS,
-    resetOptions: {
-      keepDirtyValues: true,
+  const { data: applicationConfig } = useReadApplicationConfig();
+
+  return useMutation({
+    mutationFn: (settings: Settings) =>
+      saveDeejConfig(applicationConfig?.deejConfigPath, settings),
+    onSettled: async () => {
+      return await queryClient.invalidateQueries({
+        queryKey: ['read_deej_config'],
+      });
     },
-    mode: 'onChange',
   });
-
-  const { handleSubmit, watch, unregister } = form;
-
-  const onSubmit = useCallback(
-    () => handleSubmit(saveDeejConfig)(),
-    [handleSubmit],
-  );
-
-  useEffect(() => {
-    const sub = watch(() => void onSubmit());
-    return () => {
-      sub.unsubscribe();
-      unregister();
-    };
-  }, [handleSubmit, onSubmit, unregister, watch]);
-
-  return { form, isLoading };
 };
